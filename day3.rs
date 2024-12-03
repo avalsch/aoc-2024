@@ -30,16 +30,13 @@ fn part2() -> u32 {
     let re = Regex::new(r"mul\((\d+),(\d+)\)|do\(\)|don't\(\)").unwrap();
 
     let mut enabled = true;
-    let mut sum = 0;
 
-    for c in re.captures_iter(&input()) {
-        match &c[0] {
-            "do()" => enabled = true,
-            "don't()" => enabled = false,
-            _ if enabled => sum += c[1].parse::<u32>().unwrap() * c[2].parse::<u32>().unwrap(),
-            _ => (),
-        }
-    }
-
-    sum
+    re.captures_iter(&input())
+        .filter_map(|c| match &c[0] {
+            "do()" => { enabled = true; None }
+            "don't()" => { enabled = false; None }
+            _ if enabled => Some(c[1].parse::<u32>().unwrap() * c[2].parse::<u32>().unwrap()),
+            _ => None,
+        })
+        .sum()
 }
