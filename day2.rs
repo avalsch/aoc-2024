@@ -16,14 +16,14 @@ fn main() {
     println!("part2: {}", part2());
 }
 
-fn input() -> impl Iterator<Item = Vec<usize>> {
+fn input() -> impl Iterator<Item = Vec<u32>> {
     // deal with lifetime issues
     let input = std::fs::read_to_string("day2.input").unwrap();
     let input = input.lines().map(str::to_owned).collect::<Vec<_>>();
 
     input.into_iter().map(|line| {
         line.split_whitespace()
-            .map(|n| n.parse::<usize>().unwrap())
+            .map(|n| n.parse::<u32>().unwrap())
             .collect::<Vec<_>>()
     })
 }
@@ -32,7 +32,7 @@ fn part1() -> usize {
     input().filter(|l| is_safe(&l)).count()
 }
 
-fn is_safe(line: &[usize]) -> bool {
+fn is_safe(line: &[u32]) -> bool {
     let cmp = cmp(&line);
 
     line.array_windows().all(|&[l, r]| pair_valid(l, r, &cmp))
@@ -51,7 +51,7 @@ fn part2() -> usize {
 // simpler and works well for small line lengths,
 // but has worse time complexity
 #[allow(dead_code)]
-fn is_safe_p2(line: &[usize]) -> bool {
+fn is_safe_p2(line: &[u32]) -> bool {
     is_safe(&line)
         || line
             .iter()
@@ -63,7 +63,7 @@ fn is_safe_p2(line: &[usize]) -> bool {
 /// is_safe for part 2 in O(n) time complexity
 /// (at the cost of readability & simplicity)
 #[allow(dead_code)]
-fn is_safe_p2_on(mut line: Vec<usize>) -> bool {
+fn is_safe_p2_on(mut line: Vec<u32>) -> bool {
     let cmp = cmp(&line);
 
     let mut idx = 0;
@@ -92,7 +92,7 @@ fn is_safe_p2_on(mut line: Vec<usize>) -> bool {
 
 /// determine the compare function to use for a line based on
 /// which equality occurs more often
-fn cmp(line: &[usize]) -> impl Fn(usize, usize) -> bool {
+fn cmp(line: &[u32]) -> impl Fn(u32, u32) -> bool {
     if line.array_windows().filter(|&[l, r]| l > r).count() > line.len() / 2 {
         |l, r| l > r
     } else {
@@ -100,6 +100,6 @@ fn cmp(line: &[usize]) -> impl Fn(usize, usize) -> bool {
     }
 }
 
-fn pair_valid(l: usize, r: usize, cmp: impl Fn(usize, usize) -> bool) -> bool {
-    cmp(l, r) && matches!(usize::abs_diff(l, r), 1..=3)
+fn pair_valid(l: u32, r: u32, cmp: impl Fn(u32, u32) -> bool) -> bool {
+    cmp(l, r) && matches!(u32::abs_diff(l, r), 1..=3)
 }
